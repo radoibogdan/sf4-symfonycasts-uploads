@@ -15,3 +15,6 @@
 .phpunit
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
+# Ignore files uploaded (except for the gitignore file already add to git)
+/public/uploads
