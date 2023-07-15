@@ -16,6 +16,8 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class ArticleFormType extends AbstractType
 {
@@ -50,11 +52,27 @@ class ArticleFormType extends AbstractType
                     'Interstellar Space' => 'interstellar_space'
                 ],
                 'required' => false,
+            ]);
+
+        $imageConstraints = [
+            new Image([
+                'maxSize' => '5M'
             ])
+        ];
+
+        // Force user to upload an image
+        if (!$isEdit || !$article->getImageFilename()) {
+            $imageConstraints[] = new NotNull([
+                'message' => 'Veuillez télécharger une image.'
+            ]);
+        }
+
+        $builder
             /* Little trick use imageFile (not imageFilename) */
             ->add('imageFile', FileType::class, [
                 'mapped' => false,
-                'required' => false
+                'required' => false,
+                'constraints' => $imageConstraints
             ])
         ;
 
