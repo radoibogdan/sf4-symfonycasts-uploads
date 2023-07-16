@@ -29,6 +29,7 @@ class AppExtension extends AbstractExtension implements ServiceSubscriberInterfa
     public function getFunctions(): array
     {
         return [
+            # Renvoie le path public des images téléchargées
             new TwigFunction('uploaded_asset', [$this, 'getUploadedAssetPath'])
         ];
     }
@@ -40,6 +41,10 @@ class AppExtension extends AbstractExtension implements ServiceSubscriberInterfa
             ->parse($value);
     }
 
+    /**
+     * Met a disposition dans ce fichier les services renvoyés dans l'array
+     * @return string[]
+     */
     public static function getSubscribedServices()
     {
         return [
@@ -48,6 +53,12 @@ class AppExtension extends AbstractExtension implements ServiceSubscriberInterfa
         ];
     }
 
+    /**
+     * Récupère le path public des images téléchargées
+     *
+     * @param string $path
+     * @return string
+     */
     public function getUploadedAssetPath(string $path): string
     {
         return $this->container
