@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Gedmo\Sluggable\Util\Urlizer;
+use Symfony\Component\Asset\Context\RequestStackContext;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploadHelper
@@ -13,10 +14,15 @@ class UploadHelper
      * @var string
      */
     private $uploadsPath;
+    /**
+     * @var RequestStackContext
+     */
+    private $requestStackContext;
 
-    public function __construct(string $uploadsPath)
+    public function __construct(string $uploadsPath, RequestStackContext $requestStackContext)
     {
         $this->uploadsPath = $uploadsPath;
+        $this->requestStackContext = $requestStackContext;
     }
 
     public function uploadArticleImage(UploadedFile $uploadedFile): string
@@ -43,6 +49,10 @@ class UploadHelper
      */
     public function getPublicPath($path): string
     {
-        return 'uploads/'.$path;
+        # getBasePath returns '' if project lives at root,
+        # getBasePath returns the subdomain if project lives in a subdirectory
+        # requestStackContext must be declared in services.yaml, it is not by default available as a dependency injection
+        return $this->requestStackContext
+                ->getBasePath().'/uploads/'.$path;
     }
 }

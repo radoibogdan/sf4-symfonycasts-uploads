@@ -44,3 +44,6 @@ services:
         tags:
             - { name: form.type_extension,
                 extended_type: Symfony\Component\Form\Extension\Core\Type\TextareaType }
+
+    # Make request stack context available as a dependency injection
+    Symfony\Component\Asset\Context\RequestStackContext: '@assets.context'
