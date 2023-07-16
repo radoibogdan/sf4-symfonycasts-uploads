@@ -18,3 +18,10 @@
 
 # Ignore files uploaded (except for the gitignore file already add to git)
 /public/uploads
+
+### Librarie pour les thumbnails => générer des images plus petites pour optimiser la perf
+###> liip/imagine-bundle ###
+/public/media/cache/
+###< liip/imagine-bundle ###
+
+.idea
