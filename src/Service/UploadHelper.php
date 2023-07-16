@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploadHelper
 {
+    const ARTICLE_IMAGE = 'article_image';
     /**
      * Chemin téléchargement récupéré depuis services.yaml
      * @var string
@@ -20,7 +21,7 @@ class UploadHelper
 
     public function uploadArticleImage(UploadedFile $uploadedFile): string
     {
-        $destination = $this->uploadsPath.'/article_image';
+        $destination = $this->uploadsPath.'/'.self::ARTICLE_IMAGE;
         $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
         // Urlizer, Turn name "To The Moon" in "to-the-moon"
         $newFilename = Urlizer::urlize($originalFilename).'-'.uniqid().'.'.$uploadedFile->guessExtension();
@@ -32,5 +33,16 @@ class UploadHelper
         );
 
         return $newFilename;
+    }
+
+    /**
+     * Appelé par la fonction twig créée dans AppExtension
+     *
+     * @param $path
+     * @return string
+     */
+    public function getPublicPath($path): string
+    {
+        return 'uploads/'.$path;
     }
 }
