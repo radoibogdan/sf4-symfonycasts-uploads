@@ -2,7 +2,12 @@
     {{ form_row(articleForm.title, {
         label: 'Article title'
     }) }}
-    {{ form_row(articleForm.imageFile) }}
+    {# Pour changer le nom du champ du fichier téléchargé => voir js dans edit.html.twig #}
+    {{ form_row(articleForm.imageFile, {
+        attr: {
+            'placeholder': 'Télécharger votre image'
+        }
+    }) }}
     {{ form_row(articleForm.author) }}
     {{ form_row(articleForm.location, {
         attr: {

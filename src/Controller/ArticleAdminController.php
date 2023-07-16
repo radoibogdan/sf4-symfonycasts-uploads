@@ -100,6 +100,7 @@ class ArticleAdminController extends BaseController
     }
 
     /**
+     * Modifie cham
      * @Route("/admin/article/location-select", name="admin_article_location_select")
      * @IsGranted("ROLE_USER")
      */

@@ -20,4 +20,14 @@
     {{ parent() }}
 
     <script src="{{ asset('js/admin_article_form.js') }}"></script>
+
+    {# Pour changer le nom du champ du fichier téléchargé #}
+    <script>
+        $('.custom-file-input').on('change', function (event) {
+            var inputFile = event.currentTarget;
+            $(inputFile).parent()
+                .find('.custom-file-label')
+                .html(inputFile.files[0].name)
+        })
+    </script>
 {% endblock %}
