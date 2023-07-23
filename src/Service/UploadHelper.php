@@ -4,6 +4,7 @@ namespace App\Service;
 
 use Gedmo\Sluggable\Util\Urlizer;
 use Symfony\Component\Asset\Context\RequestStackContext;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploadHelper
@@ -25,15 +26,21 @@ class UploadHelper
         $this->requestStackContext = $requestStackContext;
     }
 
-    public function uploadArticleImage(UploadedFile $uploadedFile): string
+    public function uploadArticleImage(File $file): string
     {
         $destination = $this->uploadsPath.'/'.self::ARTICLE_IMAGE;
-        $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
+
+        if ($file instanceof UploadedFile) {
+            $originalFilename = $file->getClientOriginalName();
+        } else {
+            $originalFilename = $file->getFilename();
+        }
+
         // Urlizer, Turn name "To The Moon" in "to-the-moon"
-        $newFilename = Urlizer::urlize($originalFilename).'-'.uniqid().'.'.$uploadedFile->guessExtension();
+        $newFilename = Urlizer::urlize(pathinfo($originalFilename,PATHINFO_FILENAME)).'-'.uniqid().'.'.$file->guessExtension();
 
         // Move file
-        $uploadedFile->move(
+        $file->move(
             $destination,
             $newFilename
         );
