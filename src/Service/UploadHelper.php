@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Gedmo\Sluggable\Util\Urlizer;
+use League\Flysystem\FilesystemInterface;
 use Symfony\Component\Asset\Context\RequestStackContext;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -14,22 +15,20 @@ class UploadHelper
      * Chemin téléchargement récupéré depuis services.yaml
      * @var string
      */
-    private $uploadsPath;
+    private $publicUploadFilesystem;
     /**
      * @var RequestStackContext
      */
     private $requestStackContext;
 
-    public function __construct(string $uploadsPath, RequestStackContext $requestStackContext)
+    public function __construct(FilesystemInterface $publicUploadFilesystem, RequestStackContext $requestStackContext)
     {
-        $this->uploadsPath = $uploadsPath;
         $this->requestStackContext = $requestStackContext;
+        $this->publicUploadFilesystem = $publicUploadFilesystem;
     }
 
     public function uploadArticleImage(File $file): string
     {
-        $destination = $this->uploadsPath.'/'.self::ARTICLE_IMAGE;
-
         if ($file instanceof UploadedFile) {
             $originalFilename = $file->getClientOriginalName();
         } else {
@@ -40,9 +39,9 @@ class UploadHelper
         $newFilename = Urlizer::urlize(pathinfo($originalFilename,PATHINFO_FILENAME)).'-'.uniqid().'.'.$file->guessExtension();
 
         // Move file
-        $file->move(
-            $destination,
-            $newFilename
+        $this->publicUploadFilesystem->write(
+            self::ARTICLE_IMAGE.'/'.$newFilename,
+            file_get_contents($file->getPathname())
         );
 
         return $newFilename;
