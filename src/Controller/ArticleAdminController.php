@@ -43,7 +43,7 @@ class ArticleAdminController extends BaseController
 
             // Vérifie si un fichier a été téléchargé
             if ($uploadedFile) {
-                $newFilename = $uploadHelper->uploadArticleImage($uploadedFile);
+                $newFilename = $uploadHelper->uploadArticleImage($uploadedFile, $article->getImageFilename());
                 $article->setImageFilename($newFilename);
             }
 
@@ -80,7 +80,7 @@ class ArticleAdminController extends BaseController
 
             // Vérifie si un fichier a été téléchargé
             if ($uploadedFile) {
-                $newFilename = $uploadHelper->uploadArticleImage($uploadedFile);
+                $newFilename = $uploadHelper->uploadArticleImage($uploadedFile, $article->getImageFilename());
                 $article->setImageFilename($newFilename);
             }
 

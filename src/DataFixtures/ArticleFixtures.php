@@ -99,6 +99,6 @@ EOF
        $fileSystem->copy(__DIR__.'/images/'.$randomImage, $targetPath, true);
 
        return $this->uploadHelper
-           ->uploadArticleImage(new File($targetPath));
+           ->uploadArticleImage(new File($targetPath), null);
     }
 }
