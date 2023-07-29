@@ -1,5 +1,8 @@
-# Titre
-[Example url][1]
+# Ce que tu trouveras dans ce projet
+* extension twig
+* fileupload using flysystem (version without flysystem in old commits)
+* caching images using liip
+* fixtures
 
 
 ## Démarrer serveur en local
@@ -23,8 +26,9 @@ https://127.0.0.1:8000/admin/article/1/edit
 $ composer req oneup/flysystem-bundle:^3.0
 ```
 
-
-
+### Configure Liip with Flysystem
+Tutorial 17
+[Liip+Flysystem][4]
 
 # Tests (pas sur ce projet)
 Jouer les tests (srs/tests):
@@ -36,3 +40,4 @@ $ php bin/phpunit
 [1]: https://example.com
 [2]: https://github.com/1up-lab/OneupFlysystemBundle
 [3]: https://github.com/1up-lab/OneupFlysystemBundle/blob/release/3.x/Resources/doc/index.md
+[4]: https://symfony.com/bundles/LiipImagineBundle/current/data-loader/flysystem.html

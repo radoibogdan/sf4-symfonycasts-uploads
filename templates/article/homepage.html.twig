@@ -23,7 +23,7 @@
                     <a href="{{ path('article_show', {slug: article.slug}) }}">
                         {# Utilise méthode créée "uploaded_asset" pour récupérer le path public des images #}
                         {# Utilise imagine_filter pour générer un thumbnail/image plus pétite #}
-                        <img class="article-img" src="{{ uploaded_asset(article.imagePath) | imagine_filter('squared_thumbnail_small') }}">
+                        <img class="article-img" src="{{ article.imagePath | imagine_filter('squared_thumbnail_small') }}">
                         <div class="article-title d-inline-block pl-3 align-middle">
                             <span>{{ article.title }}</span>
                             <small>({{ article.nonDeletedComments|length }} comments)</small>

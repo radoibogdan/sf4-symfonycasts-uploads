@@ -1,6 +1,26 @@
 # Librarie pour les thumbnails => générer des images plus petites pour optimiser la perf
 # Documentation on how to configure the bundle can be found at: https://symfony.com/doc/current/bundles/LiipImagineBundle/basic-usage.html
 liip_imagine:
+    loaders:
+        # enables liip to use Flysystem filesystem to load files
+        # this can be any name
+        flysystem_loader:
+            flysystem:
+                # this one comes from services.yaml, from bind $publicUploadFilesystem
+                filesystem_service: oneup_flysystem.public_uploads_filesystem_filesystem
+    #default loader to use for all filter sets
+    data_loader: flysystem_loader
+
+    resolvers:
+        # enables cache resolution using the Flysystem filesystem
+        flysystem_resolver:
+            flysystem:
+                filesystem_service: oneup_flysystem.public_uploads_filesystem_filesystem
+                root_url:           '/uploads'
+                cache_prefix:       media/cache
+#                visibility:         public
+    cache: flysystem_resolver
+
     # valid drivers options include "gd" or "gmagick" or "imagick"
     driver: "gd"
     filter_sets:

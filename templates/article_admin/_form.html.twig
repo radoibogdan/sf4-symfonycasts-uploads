@@ -15,7 +15,7 @@
         <div class="col-sm-3">
             {# For new article imageFilename is null => error => use default to suppress error #}
             {% if articleForm.vars.data.imageFilename | default %}
-                <img src="{{ uploaded_asset(articleForm.vars.data.imagePath) | imagine_filter('squared_thumbnail_small') }}" height="100">
+                <img src="{{ articleForm.vars.data.imagePath | imagine_filter('squared_thumbnail_small') }}" height="100">
             {% endif %}
         </div>
     </div>
