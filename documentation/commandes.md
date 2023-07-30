@@ -1,5 +1,8 @@
 # Ce que tu trouveras dans ce projet
 * extension twig
+* services.yaml
+  * bind variable to service
+  * parameter
 * fileupload using flysystem (version without flysystem in old commits)
 * caching images using liip
 * fixtures

@@ -23,16 +23,19 @@ class UploadHelper
 
     private $logger;
 
+    private $publicAssetBaseUrl;
+
     /**
      * @param FilesystemInterface $publicUploadFilesystem This is FLYSYSTEM
      * @param RequestStackContext $requestStackContext
      * @param LoggerInterface $logger
      */
-    public function __construct(FilesystemInterface $publicUploadFilesystem, RequestStackContext $requestStackContext, LoggerInterface $logger)
+    public function __construct(FilesystemInterface $publicUploadFilesystem, RequestStackContext $requestStackContext, LoggerInterface $logger, $uploadedAssetBaseUrl)
     {
         $this->requestStackContext = $requestStackContext;
         $this->publicUploadFilesystem = $publicUploadFilesystem;
         $this->logger = $logger;
+        $this->publicAssetBaseUrl = $uploadedAssetBaseUrl; # services.yaml
     }
 
     public function uploadArticleImage(File $file, ?string $existingFilename): string
@@ -92,6 +95,6 @@ class UploadHelper
         # getBasePath returns the subdomain if project lives in a subdirectory
         # requestStackContext must be declared in services.yaml, it is not by default available as a dependency injection
         return $this->requestStackContext
-                ->getBasePath().'/uploads/'.$path;
+                ->getBasePath().$this->publicAssetBaseUrl.'/'.$path;
     }
 }
