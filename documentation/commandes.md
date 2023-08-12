@@ -6,6 +6,8 @@
 * fileupload using flysystem (version without flysystem in old commits)
 * caching images using liip
 * fixtures
+* Security 
+  * Voters (Security/Voters)
 
 
 ## Démarrer serveur en local

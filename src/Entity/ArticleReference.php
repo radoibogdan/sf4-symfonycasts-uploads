@@ -9,6 +9,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ArticleReference
 {
+    public function __construct(Article $article)
+    {
+        $this->article = $article;
+    }
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -47,12 +52,7 @@ class ArticleReference
         return $this->article;
     }
 
-    public function setArticle(?Article $article): self
-    {
-        $this->article = $article;
-
-        return $this;
-    }
+    // Pas de setArticle car on ne pourra pas modifier la reference d'un article. On supprime et on rajoute une autre
 
     public function getFilename(): ?string
     {
