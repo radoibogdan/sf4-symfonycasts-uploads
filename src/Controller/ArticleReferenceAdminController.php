@@ -8,7 +8,9 @@ use App\Service\UploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -34,6 +36,7 @@ class ArticleReferenceAdminController extends BaseController
                 new File([
                     'maxSize' => '5M', # for > 5M => change upload_max_filesize in php.ini + restart apache
                     'mimeTypes' => [
+                        'image/*',
                         'application/pdf',
                         'application/vnd.ms-excel',
                         'application/msword',
@@ -67,5 +70,32 @@ class ArticleReferenceAdminController extends BaseController
         return $this->redirectToRoute('admin_article_edit', [
             'id' => $article->getId()
         ]);
+    }
+
+    /**
+     * @Route("/admin/article/references/{id}/download", name="admin_article_download_reference", methods={"GET"})
+     */
+    public function downloadArticleReference(ArticleReference $reference, UploadHelper $uploadHelper)
+    {
+        $article = $reference->getArticle();
+        $this->denyAccessUnlessGranted('MANAGE', $article);
+
+        // Show file in  browser
+        $response = new StreamedResponse(function () use($reference, $uploadHelper) {
+            $fileStream = $uploadHelper->readStream($reference->getFilePath(), false);
+            $outputStream = fopen('php://output', 'wb'); # wb = read + b for windows (binary)
+            stream_copy_to_stream($fileStream, $outputStream);
+        });
+        $response->headers->set('Content-Type', $reference->getMimeType());
+
+        // Download file directly
+        $disposition = HeaderUtils::makeDisposition(
+            HeaderUtils::DISPOSITION_ATTACHMENT,
+            $reference->getOriginalFilename()
+        );
+        $response->headers->set('Content-Disposition', $disposition);
+
+        return $response;
+
     }
 }

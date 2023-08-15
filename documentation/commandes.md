@@ -8,7 +8,7 @@
 * fixtures
 * Security 
   * Voters (Security/Voters)
-
+* ValidatorInterface + Constraints in Controller 
 
 ## Démarrer serveur en local
 ```bash
