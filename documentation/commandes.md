@@ -4,6 +4,7 @@
   * bind variable to service
   * parameter
 * fileupload using flysystem (version without flysystem in old commits)
+  * private file upload using streams
 * caching images using liip
 * fixtures
 * Security 

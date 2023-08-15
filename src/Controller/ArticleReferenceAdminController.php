@@ -80,10 +80,10 @@ class ArticleReferenceAdminController extends BaseController
         $article = $reference->getArticle();
         $this->denyAccessUnlessGranted('MANAGE', $article);
 
-        // Show file in  browser
+        // Show file in browser
         $response = new StreamedResponse(function () use($reference, $uploadHelper) {
             $fileStream = $uploadHelper->readStream($reference->getFilePath(), false);
-            $outputStream = fopen('php://output', 'wb'); # wb = read + b for windows (binary)
+            $outputStream = fopen('php://output', 'wb'); # wb = write + b for windows (binary)
             stream_copy_to_stream($fileStream, $outputStream);
         });
         $response->headers->set('Content-Type', $reference->getMimeType());
