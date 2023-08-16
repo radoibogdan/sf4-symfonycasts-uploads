@@ -43,6 +43,18 @@ function initializeDropzone() {
     * $request->files->get('reference');
     */
     var dropzone = new Dropzone(formElement, {
-        paramName: 'reference'
+        paramName: 'reference',
+        init: function () {
+            /* Explained
+            * init - called when setting things up
+            * file - contains details about the file that was uploaded
+            * data - data sent back by the server
+            */
+            this.on('error', function (file, data) {
+                if (data.detail) { /* error message is in data.detail */
+                    this.emit('error', file, data.detail);
+                }
+            })
+        }
     })
 }
