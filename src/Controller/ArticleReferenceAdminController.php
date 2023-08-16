@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\File;
@@ -70,6 +71,60 @@ class ArticleReferenceAdminController extends BaseController
         return $this->redirectToRoute('admin_article_edit', [
             'id' => $article->getId()
         ]);
+    }
+
+    /**
+     * @Route("api/admin/article/{id}/references", name="api_admin_article_add_references", methods={"POST"})
+     * @IsGranted("MANAGE", subject="article")
+     */
+    public function uploadArticleReferenceApi(Article $article, Request $request, UploadHelper $uploadHelper, EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    {
+        /** @var UploadedFile $uploadedFile */
+        $uploadedFile = $request->files->get('reference');
+
+        // add mymeTypesMessage for specific message error
+        $violations = $validator->validate(
+            $uploadedFile,
+            [
+                new NotBlank(["message" => "Choisir un fichier pour le téléchargement."]),
+                new File([
+                    'maxSize' => '5M', # for > 5M => change upload_max_filesize in php.ini + restart apache
+                    'mimeTypes' => [
+                        'image/*',
+                        'application/pdf',
+                        'application/vnd.ms-excel',
+                        'application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                    ], # More examples => MimeTypeExtensionGuesser.php
+                    'mimeTypesMessage' => 'Formats acceptés : pdf, image'
+                ])
+            ]
+        );
+
+        if ($violations->count() > 0) {
+            return $this->json($violations, Response::HTTP_BAD_REQUEST);
+        }
+
+        $filename = $uploadHelper->uploadArticleReference($uploadedFile);
+        $articleReference = (new ArticleReference($article))
+            ->setFilename($filename)
+            ->setOriginalFilename($uploadedFile->getClientOriginalName() ?? $filename)
+            ->setMimeType($uploadedFile->getMimeType() ?? 'application/octet-stream');
+
+        $entityManager->persist($articleReference);
+        $entityManager->flush();
+
+        /**
+         * Create group main to avoid infinite loop serialization of $articleReference
+         */
+        return $this->json(
+            $articleReference,
+            Response::HTTP_CREATED,
+            [],
+            ['groups' => ['main']]
+        );
     }
 
     /**
