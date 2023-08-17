@@ -74,6 +74,33 @@ class ArticleReferenceAdminController extends BaseController
     }
 
     /**
+     * @Route("/admin/article/references/{id}/download", name="admin_article_download_reference", methods={"GET"})
+     */
+    public function downloadArticleReference(ArticleReference $reference, UploadHelper $uploadHelper)
+    {
+        $article = $reference->getArticle();
+        $this->denyAccessUnlessGranted('MANAGE', $article);
+
+        // Show file in browser
+        $response = new StreamedResponse(function () use($reference, $uploadHelper) {
+            $fileStream = $uploadHelper->readStream($reference->getFilePath(), false);
+            $outputStream = fopen('php://output', 'wb'); # wb = write + b for windows (binary)
+            stream_copy_to_stream($fileStream, $outputStream);
+        });
+        $response->headers->set('Content-Type', $reference->getMimeType());
+
+        // Download file directly
+        $disposition = HeaderUtils::makeDisposition(
+            HeaderUtils::DISPOSITION_ATTACHMENT,
+            $reference->getOriginalFilename()
+        );
+        $response->headers->set('Content-Disposition', $disposition);
+
+        return $response;
+
+    }
+
+    /**
      * @Route("api/admin/article/{id}/references", name="api_admin_article_add_references", methods={"POST"})
      * @IsGranted("MANAGE", subject="article")
      */
@@ -128,29 +155,18 @@ class ArticleReferenceAdminController extends BaseController
     }
 
     /**
-     * @Route("/admin/article/references/{id}/download", name="admin_article_download_reference", methods={"GET"})
+     * Used by dropzone + js to render dynamic article reference list in edit_v2_api.html.twig + admin_article_form.js
+     *
+     * @Route("api/admin/article/{id}/references", methods="GET", name="api_admin_article_list_references")
+     * @IsGranted("MANAGE", subject="article")
      */
-    public function downloadArticleReference(ArticleReference $reference, UploadHelper $uploadHelper)
+    public function getArticleReferences(Article $article)
     {
-        $article = $reference->getArticle();
-        $this->denyAccessUnlessGranted('MANAGE', $article);
-
-        // Show file in browser
-        $response = new StreamedResponse(function () use($reference, $uploadHelper) {
-            $fileStream = $uploadHelper->readStream($reference->getFilePath(), false);
-            $outputStream = fopen('php://output', 'wb'); # wb = write + b for windows (binary)
-            stream_copy_to_stream($fileStream, $outputStream);
-        });
-        $response->headers->set('Content-Type', $reference->getMimeType());
-
-        // Download file directly
-        $disposition = HeaderUtils::makeDisposition(
-            HeaderUtils::DISPOSITION_ATTACHMENT,
-            $reference->getOriginalFilename()
+        return $this->json(
+            $article->getArticleReferences(),
+            Response::HTTP_OK,
+            [],
+            ['groups' => ['main']]
         );
-        $response->headers->set('Content-Disposition', $disposition);
-
-        return $response;
-
     }
 }

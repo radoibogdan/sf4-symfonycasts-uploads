@@ -1,0 +1,66 @@
+{% extends 'content_base.html.twig' %}
+
+{% block content_body %}
+    <h1>Edit the Article! 🚀</h1>
+
+    {# enctype="multipart/form-data" => needed to send data in a different format #}
+{#
+    <form method="post" action="{{ path('upload_test') }}" enctype="multipart/form-data">
+        <input type="file" name="image">
+        <button type="submit" class="btn btn-primary">Upload!</button>
+    </form>
+#}
+
+    <div class="row">
+        <div class="col-sm-8">
+            <h3>Details</h3>
+            {{ include('article_admin/_form.html.twig', {
+                button_text: 'Update!'
+            }) }}
+        </div>
+        <div class="col-sm-4">
+            <h3>References</h3>
+
+            <ul class="list-group small js-reference-list" data-url="{{ path('api_admin_article_list_references', {id: article.id}) }}">
+                {# article reference list to be populated by dropzone + js #}
+            </ul>
+
+            <hr>
+
+            <form action="{{ path('api_admin_article_add_references', {'id': article.id}) }}"
+                  method="POST"
+                  enctype="multipart/form-data"
+                  class="dropzone js-reference-dropzone"
+            >
+{#                <input type="file" name="reference">#}
+{#                <button type="submit" class="btn btn-sm btn-primary">Upload</button>#}
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" integrity="sha512-WvVX1YO12zmsvTpUQV8s7ZU98DnkaAokcciMZJfnNWyNzm7//QRV61t4aEr0WdIa4pe854QHLTV302vH92FSMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {# DROPZONE JS LIBRARY - For multiple file upload #}
+    {# DROPZONE config inside admin_article_form.js #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js" integrity="sha512-oQq8uth41D+gIH/NJvSJvVB85MFk1eWpMK6glnkg6I7EdMqC1XVkW7RxLheXwmFdG03qScCM7gKS/Cx3FYt7Tg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="{{ asset('js/admin_article_form.js') }}"></script>
+
+    {# Pour changer le nom du champ du fichier téléchargé #}
+    <script>
+        $('.custom-file-input').on('change', function (event) {
+            var inputFile = event.currentTarget;
+            $(inputFile).parent()
+                .find('.custom-file-label')
+                .html(inputFile.files[0].name)
+        })
+    </script>
+{% endblock %}
