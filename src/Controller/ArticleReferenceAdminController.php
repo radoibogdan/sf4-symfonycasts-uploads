@@ -166,7 +166,7 @@ class ArticleReferenceAdminController extends BaseController
             $article->getArticleReferences(),
             Response::HTTP_OK,
             [],
-            ['groups' => ['main']]
+            ['groups' => ['main']] # create group main to avoid infinite loop serialization of $articleReference
         );
     }
 }

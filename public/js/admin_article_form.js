@@ -2,11 +2,13 @@
 Dropzone.autoDiscover = false;
 
 $(document).ready(function() {
+    // Instantiating ReferenceList will populate the list with references (see its constructor)
     var referenceList = new ReferenceList($('.js-reference-list'));
 
-    /* Config for multiple file upload */
+    // Config for multiple file upload
     initializeDropzone(referenceList);
 
+    // Editing Article Location and hide/show options depending on the location
     var $locationSelect = $('.js-article-form-location');
     var $specificLocationTarget = $('.js-specific-location-target');
 
@@ -33,13 +35,14 @@ $(document).ready(function() {
     });
 });
 
-// todo - use Webpack Encore so ES6 syntax is transpiled to ES5
+// TODO - use Webpack Encore so ES6 syntax is transpiled to ES5
 class ReferenceList
 {
     constructor($element) {
         this.$element = $element;
         this.references = [];
         this.render();
+        // Get article references from route api_admin_article_list_references
         $.ajax({
             url: this.$element.data('url')
         }).then(data => {
@@ -48,11 +51,13 @@ class ReferenceList
         })
     }
 
+    // Add new article reference to liste and Refresh list
     addReference(reference) {
         this.references.push(reference);
         this.render();
     }
 
+    // Show List
     render() {
         const itemsHtml = this.references.map(reference => {
             return `
@@ -85,17 +90,16 @@ function initializeDropzone(referenceList) {
     var dropzone = new Dropzone(formElement, {
         paramName: 'reference',
         init: function () { // init - called when setting things up
-            /* On file upload success => add filename to list */
+            // SUCCESS file upload => add filename to list
             this.on('success', function (file, data) {
                 referenceList.addReference(data);
             })
-            /* On upload error
-            * file - contains details about the file that was uploaded
-            * data - data sent back by the server
-            */
+            // ERROR
+            // file - contains details about the file that was uploaded
+            // data - data sent back by the server
             this.on('error', function (file, data) {
-                if (data.detail) { /* error message is in data.detail */
-                    this.emit('error', file, data.detail);
+                if (data.detail) {
+                    this.emit('error', file, data.detail); // error message is in data.detail
                 }
             })
         }
