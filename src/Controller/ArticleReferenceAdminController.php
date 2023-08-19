@@ -169,4 +169,22 @@ class ArticleReferenceAdminController extends BaseController
             ['groups' => ['main']] # create group main to avoid infinite loop serialization of $articleReference
         );
     }
+
+    /**
+     * @Route("admin/article/references/{id}", name="admin_article_delete_reference", methods={"DELETE"})
+     */
+    public function deleteArticleReference(ArticleReference $reference, UploadHelper $uploadHelper, EntityManagerInterface $entityManager)
+    {
+        $article = $reference->getArticle();
+        $this->denyAccessUnlessGranted('MANAGE', $article);
+
+        # TODO: Use doctrine transaction to commit transaction (remove $reference) after file was deleted
+        $entityManager->remove($reference);
+        $entityManager->flush();
+
+        $uploadHelper->deleteFile($reference->getFilePath(), false);
+
+        // All is good, I have nothing else to say
+        return new Response(null, Response::HTTP_NO_CONTENT);
+    }
 }

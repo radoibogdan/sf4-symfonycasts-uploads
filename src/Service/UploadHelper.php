@@ -137,4 +137,20 @@ class UploadHelper
 
         return $resource;
     }
+
+    /**
+     * Delete file using flysystem library, can delete public or private files
+     *
+     * @throws FileNotFoundException
+     */
+    public function deleteFile(string $filePath, bool $isPublic)
+    {
+        $filesystem = $isPublic ? $this->publicUploadFilesystem : $this->privateUploadFilesystem;
+
+        $result = $filesystem->delete($filePath);
+
+        if ($result === false) {
+            throw new \Exception(sprintf('Error deleting file "%s"', $filePath));
+        }
+    }
 }

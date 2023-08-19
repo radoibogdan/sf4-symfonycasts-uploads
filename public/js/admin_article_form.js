@@ -42,9 +42,15 @@ class ReferenceList
         this.$element = $element;
         this.references = [];
         this.render();
-        // Get article references from route api_admin_article_list_references
+
+        // Delete reference - Add event listener to every reference
+        this.$element.on('click', '.js-reference-delete', (event) => {
+            this.handleReferenceDelete(event);
+        })
+
+        // Get article references
         $.ajax({
-            url: this.$element.data('url')
+            url: this.$element.data('url') // api_admin_article_list_references
         }).then(data => {
             this.references = data;
             this.render();
@@ -57,15 +63,33 @@ class ReferenceList
         this.render();
     }
 
+    // Delete article reference and Refresh list
+    handleReferenceDelete(event) {
+        const $li = $(event.currentTarget).closest('.list-group-item');
+        const id = $li.data('id');
+        $li.addClass('disabled');
+
+        $.ajax({
+            'url': '/admin/article/references/'+id, // admin_article_delete_reference
+            'method': 'DELETE'
+        }).then(() => {
+            this.references = this.references.filter(reference => {
+                return reference.id !== id;
+            });
+            this.render();
+        });
+    }
+
     // Show List
     render() {
         const itemsHtml = this.references.map(reference => {
             return `
-<li class="list-group-item d-flex justify-content-between align-items-center">
-${reference.originalFilename}
-<span>
-<a href="/admin/article/references/${reference.id}/download"><span class="fa fa-download"></span></a>
-</span>
+<li class="list-group-item d-flex justify-content-between align-items-center" data-id="${reference.id}">
+    ${reference.originalFilename}
+    <span>
+        <a class="btn btn-link btn-sm" href="/admin/article/references/${reference.id}/download"><span class="fa fa-download" style="vertical-align: middle"></span></a>
+        <button class="js-reference-delete btn btn-link btn-sm"><span class="fa fa-trash"></span></button>
+    </span>
 </li>
 `
         });
