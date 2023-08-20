@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -143,9 +144,7 @@ class ArticleReferenceAdminController extends BaseController
         $entityManager->persist($articleReference);
         $entityManager->flush();
 
-        /**
-         * Create group main to avoid infinite loop serialization of $articleReference
-         */
+        # Create group main to avoid infinite loop serialization of $articleReference, see group "main" in ArticleReference
         return $this->json(
             $articleReference,
             Response::HTTP_CREATED,
@@ -166,7 +165,7 @@ class ArticleReferenceAdminController extends BaseController
             $article->getArticleReferences(),
             Response::HTTP_OK,
             [],
-            ['groups' => ['main']] # create group main to avoid infinite loop serialization of $articleReference
+            ['groups' => ['main']] # create group main to avoid infinite loop serialization of $articleReference, see group "main" in ArticleReference
         );
     }
 
@@ -186,5 +185,47 @@ class ArticleReferenceAdminController extends BaseController
 
         // All is good, I have nothing else to say
         return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
+
+    /**
+     * @Route("admin/article/references/{id}", name="admin_article_update_reference", methods={"PUT"})
+     */
+    public function updateArticleReference(
+        ArticleReference $reference,
+        EntityManagerInterface $entityManager,
+        SerializerInterface $serializer,
+        Request $request,
+        ValidatorInterface $validator
+    ) {
+        $article = $reference->getArticle();
+        $this->denyAccessUnlessGranted('MANAGE', $article);
+
+        $serializer->deserialize(
+            $request->getContent(),
+            ArticleReference::class,
+            'json',
+            [
+                'object_to_populate' => $reference, # update existing $reference passed from arguments
+                'groups' => ['input']               # restrict update only to originalFilename, see group "input" in ArticleReference
+            ]
+        );
+
+        $violations = $validator->validate($reference);
+        if ($violations->count() > 0) {
+            # TODO: Errors are not handled in view, highlight input in red and print error below
+            return $this->json($violations, Response::HTTP_BAD_REQUEST);
+        }
+
+        $entityManager->persist($reference);
+        $entityManager->flush();
+
+        # Create group main to avoid infinite loop serialization of $reference, see group "main" in ArticleReference
+        return $this->json(
+            $reference,
+            Response::HTTP_OK,
+            [],
+            ['groups' => ['main']]
+        );
     }
 }

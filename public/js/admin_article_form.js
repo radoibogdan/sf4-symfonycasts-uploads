@@ -46,7 +46,11 @@ class ReferenceList
         // Delete reference - Add event listener to every reference
         this.$element.on('click', '.js-reference-delete', (event) => {
             this.handleReferenceDelete(event);
-        })
+        });
+
+        this.$element.on('blur', '.js-edit-filename', (event) => {
+            this.handleReferenceEditFilename(event);
+        });
 
         // Get article references
         $.ajax({
@@ -80,12 +84,36 @@ class ReferenceList
         });
     }
 
+    // Edit article reference filename
+    handleReferenceEditFilename(event) {
+        const $li = $(event.currentTarget).closest('.list-group-item');
+        const id = $li.data('id');
+        const reference = this.references.find(reference => {
+            return reference.id = id;
+        });
+        reference.originalFilename = $(event.currentTarget).val();
+
+        $.ajax({
+            'url': '/admin/article/references/'+id, // admin_article_edit_reference
+            'method': 'PUT',
+            'data': JSON.stringify(reference),
+            'error': function (data, status, error) {
+                const span = document.createElement("span");
+                span.innerHTML = JSON.parse(data.responseText).detail;
+                span.className = "alert alert-danger";
+                $(event.currentTarget).closest('.list-group-item').after(span);
+            }
+        })
+    }
+
     // Show List
     render() {
         const itemsHtml = this.references.map(reference => {
             return `
 <li class="list-group-item d-flex justify-content-between align-items-center" data-id="${reference.id}">
-    ${reference.originalFilename}
+    <!-- Show only name ${reference.originalFilename}-->
+    <!-- User can edit -->
+     <input class="form-control js-edit-filename" type="text" value="${reference.originalFilename}" style="width: auto">
     <span>
         <a class="btn btn-link btn-sm" href="/admin/article/references/${reference.id}/download"><span class="fa fa-download" style="vertical-align: middle"></span></a>
         <button class="js-reference-delete btn btn-link btn-sm"><span class="fa fa-trash"></span></button>
