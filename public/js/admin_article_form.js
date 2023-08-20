@@ -40,6 +40,10 @@ class ReferenceList
 {
     constructor($element) {
         this.$element = $element;
+        this.sortable = Sortable.create(this.$element[0], { // [0] because Sortable wants raw html (not a jquery element)
+            handle: '.drag-handle', // only move whole item when moving this element
+            animation: 150
+        });
         this.references = [];
         this.render();
 
@@ -112,8 +116,10 @@ class ReferenceList
             return `
 <li class="list-group-item d-flex justify-content-between align-items-center" data-id="${reference.id}">
     <!-- Show only name ${reference.originalFilename}-->
+    <!-- User can reorder -->
+    <span class="drag-handle fa fa-reorder"></span>
     <!-- User can edit -->
-     <input class="form-control js-edit-filename" type="text" value="${reference.originalFilename}" style="width: auto">
+    <input class="form-control js-edit-filename" type="text" value="${reference.originalFilename}" style="  width: auto">
     <span>
         <a class="btn btn-link btn-sm" href="/admin/article/references/${reference.id}/download"><span class="fa fa-download" style="vertical-align: middle"></span></a>
         <button class="js-reference-delete btn btn-link btn-sm"><span class="fa fa-trash"></span></button>

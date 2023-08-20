@@ -11,6 +11,8 @@
 * Security 
   * Voters (Security/Voters)
 * ValidatorInterface + Constraints in Controller 
+* Ajax requests / json routes
+* Sorting items using sortablejs JS library
 
 ## Démarrer serveur en local
 ```bash
@@ -42,6 +44,10 @@ Install with encore
 OR [DropZone JS library CDN][5] (used in this project)
 - min.js (Copy Script Tag with SRI) + min css
 
+## Sortable list article references using SortableJs Js library
+Install with encore and import when using it
+or [SortableJs Js library][6]
+
 # Tests (pas sur ce projet)
 Jouer les tests (srs/tests):
 
@@ -54,3 +60,4 @@ $ php bin/phpunit
 [3]: https://github.com/1up-lab/OneupFlysystemBundle/blob/release/3.x/Resources/doc/index.md
 [4]: https://symfony.com/bundles/LiipImagineBundle/current/data-loader/flysystem.html
 [5]: https://cdnjs.com/libraries/dropzone
+[5]: https://www.jsdelivr.com/package/npm/sortablejs

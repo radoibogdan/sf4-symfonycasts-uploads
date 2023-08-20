@@ -42,6 +42,17 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" integrity="sha512-WvVX1YO12zmsvTpUQV8s7ZU98DnkaAokcciMZJfnNWyNzm7//QRV61t4aEr0WdIa4pe854QHLTV302vH92FSMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    {# CSS SORTABLE JS LIBRARY - For sorting article references #}
+    <style>
+        /* When dragging sortable adds this class where the element will be added if you stop at that point */
+        .sortable-ghost {
+            background-color: lightblue;
+        }
+        .drag-handle {
+            cursor: grab;
+        }
+    </style>
 {% endblock %}
 
 
@@ -51,6 +62,9 @@
     {# DROPZONE JS LIBRARY - For multiple file upload #}
     {# DROPZONE config inside admin_article_form.js #}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js" integrity="sha512-oQq8uth41D+gIH/NJvSJvVB85MFk1eWpMK6glnkg6I7EdMqC1XVkW7RxLheXwmFdG03qScCM7gKS/Cx3FYt7Tg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    {# SORTABLE JS LIBRARY - For sorting article references #}
+    <script src=" https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js "></script>
 
     <script src="{{ asset('js/admin_article_form.js') }}"></script>
 
