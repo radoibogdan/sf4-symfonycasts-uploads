@@ -42,7 +42,15 @@ class ReferenceList
         this.$element = $element;
         this.sortable = Sortable.create(this.$element[0], { // [0] because Sortable wants raw html (not a jquery element)
             handle: '.drag-handle', // only move whole item when moving this element
-            animation: 150
+            animation: 150,
+            onEnd: () => {
+                // console.log(this.sortable.toArray());
+                $.ajax({
+                    'url': this.$element.data('url')+'/reorder',
+                    'method': 'POST',
+                    'data': JSON.stringify(this.sortable.toArray())
+                });
+            }
         });
         this.references = [];
         this.render();
